@@ -1,17 +1,20 @@
 'use client'
 
 import { useState } from 'react'
-import { ShoppingCart, Heart, Share2, X } from 'lucide-react'
+import { ShoppingCart, Heart, Share2, X, MessageCircle } from 'lucide-react'
 import { usePreferenceStore } from '@/lib/store'
-import type { Artwork } from '@/lib/types'
+import { MessageCompose } from '@/components/message-compose'
+import type { Artist, Artwork } from '@/lib/types'
 
 interface Props {
   artwork: Artwork
+  artist: Artist | null
 }
 
-export function ArtworkActions({ artwork }: Props) {
+export function ArtworkActions({ artwork, artist }: Props) {
   const { favorite_artworks, toggleFavoriteArtwork } = usePreferenceStore()
   const [showOffer, setShowOffer] = useState(false)
+  const [showMessage, setShowMessage] = useState(false)
   const [offerAmount, setOfferAmount] = useState('')
   const [offerMessage, setOfferMessage] = useState('')
   const [toast, setToast] = useState<string | null>(null)
@@ -97,7 +100,25 @@ export function ArtworkActions({ artwork }: Props) {
             {showOffer ? 'Cancel offer' : 'Make an Offer'}
           </button>
         )}
+        {artist && (
+          <button
+            onClick={() => setShowMessage(true)}
+            className="w-full text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-50 py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-colors"
+          >
+            <MessageCircle size={16} aria-hidden="true" />
+            Have a question? Message {artist.name.split(' ')[0]}
+          </button>
+        )}
       </div>
+
+      {artist && (
+        <MessageCompose
+          artist={artist}
+          artworkId={artwork.id}
+          open={showMessage}
+          onClose={() => setShowMessage(false)}
+        />
+      )}
 
       {showOffer && (
         <form

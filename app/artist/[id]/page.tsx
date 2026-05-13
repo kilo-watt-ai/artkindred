@@ -2,11 +2,12 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { Mail, ExternalLink, MapPin } from 'lucide-react'
+import { ExternalLink, MapPin } from 'lucide-react'
 import { Navigation } from '@/components/navigation'
 import { Footer } from '@/components/footer'
 import { SEED_ARTISTS, SEED_ARTWORKS } from '@/lib/seed-data'
 import { FavoriteArtistButton } from './_components/favorite-artist-button'
+import { ContactArtistButton } from './_components/contact-artist-button'
 
 const SITE_URL = 'https://artkindred.vercel.app'
 
@@ -141,13 +142,7 @@ export default async function ArtistPage({ params }: Props) {
                 </dl>
 
                 <div className="flex flex-wrap gap-3">
-                  <a
-                    href={`mailto:hello@artkindred.com?subject=Question about ${encodeURIComponent(artist.name)}`}
-                    className="btn-primary inline-flex items-center gap-2"
-                  >
-                    <Mail size={18} aria-hidden="true" />
-                    Contact artist
-                  </a>
+                  <ContactArtistButton artist={artist} />
                   {artist.website && (
                     <a
                       href={artist.website}

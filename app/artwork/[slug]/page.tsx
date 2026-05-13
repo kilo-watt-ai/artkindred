@@ -242,7 +242,7 @@ export default async function ArtworkPage({ params }: Props) {
               />
 
 
-              <ArtworkActions artwork={artwork} />
+              <ArtworkActions artwork={artwork} artist={artist ?? null} />
 
               <p
                 className={`p-3 rounded-lg border text-sm font-medium ${

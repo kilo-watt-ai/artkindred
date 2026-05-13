@@ -17,13 +17,14 @@ import {
   LogOut
 } from 'lucide-react'
 import { useSessionStore } from '@/lib/session'
+import { useMessageStore, getThreadsForUser } from '@/lib/messages'
 import {
   SEED_ARTISTS,
   SEED_ARTWORKS,
-  MOCK_ORDERS,
-  MOCK_MESSAGES
+  MOCK_ORDERS
 } from '@/lib/seed-data'
 import type { Order } from '@/lib/types'
+import { MessageThreadView } from '@/components/message-thread-view'
 
 type Tab = 'overview' | 'listings' | 'orders' | 'inbox' | 'profile'
 
@@ -43,6 +44,8 @@ export function PortfolioClient() {
   const router = useRouter()
   const session = useSessionStore((s) => s.session)
   const signOut = useSessionStore((s) => s.signOut)
+  const user_messages = useMessageStore((s) => s.user_messages)
+  const read_overrides = useMessageStore((s) => s.read_overrides)
 
   const [tab, setTab] = useState<Tab>('overview')
   const [hydrated, setHydrated] = useState(false)
@@ -80,14 +83,11 @@ export function PortfolioClient() {
 
   const myWorks = SEED_ARTWORKS.filter((a) => a.artist_id === artist.id)
   const myOrders = MOCK_ORDERS.filter((o) => o.artist_id === artist.id)
-  const myMessages = MOCK_MESSAGES.filter(
-    (m) => m.sender_id === artist.id || m.recipient_id === artist.id
-  ).sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
+
+  const myThreads = getThreadsForUser(artist.id, user_messages, read_overrides)
+  const unreadCount = myThreads.reduce((sum, t) => sum + t.unread, 0)
 
   const totalRevenue = myOrders.reduce((sum, o) => sum + o.amount, 0)
-  const unreadCount = myMessages.filter(
-    (m) => m.recipient_id === artist.id && !m.read
-  ).length
 
   const tabs: { value: Tab; label: string; count?: number }[] = [
     { value: 'overview', label: 'Overview' },
@@ -398,63 +398,10 @@ export function PortfolioClient() {
           role="tabpanel"
           aria-labelledby="tab-inbox"
         >
-          {myMessages.length === 0 ? (
-            <div className="card p-10 text-center">
-              <Mail
-                size={40}
-                className="text-gray-400 mx-auto mb-3"
-                aria-hidden="true"
-              />
-              <p className="font-semibold text-gray-700 mb-1">No messages</p>
-              <p className="text-sm text-gray-500">
-                Buyer inquiries will show up here.
-              </p>
-            </div>
-          ) : (
-            <ul className="space-y-3" role="list">
-              {myMessages.map((msg) => {
-                const isIncoming = msg.recipient_id === artist.id
-                const work = msg.artwork_id
-                  ? SEED_ARTWORKS.find((a) => a.id === msg.artwork_id)
-                  : null
-                const date = new Date(msg.created_at)
-                return (
-                  <li
-                    key={msg.id}
-                    className={`card p-4 ${
-                      isIncoming && !msg.read ? 'bg-blue-50 border-blue-200' : ''
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2 text-xs text-gray-500">
-                      <span className="font-medium text-gray-700">
-                        {isIncoming ? 'From buyer' : 'You wrote'}
-                        {isIncoming && !msg.read && (
-                          <span className="ml-2 inline-block px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full">
-                            New
-                          </span>
-                        )}
-                      </span>
-                      <span>{date.toLocaleDateString()}</span>
-                    </div>
-                    {work && (
-                      <p className="text-xs text-gray-600 mb-2">
-                        Re:{' '}
-                        <Link
-                          href={`/artwork/${work.slug}`}
-                          className="text-blue-600 hover:underline"
-                        >
-                          {work.title}
-                        </Link>
-                      </p>
-                    )}
-                    <p className="text-sm text-gray-800 leading-relaxed">
-                      {msg.content}
-                    </p>
-                  </li>
-                )
-              })}
-            </ul>
-          )}
+          <MessageThreadView
+            currentUserId={artist.id}
+            otherRoleLabel="the buyer"
+          />
         </div>
       )}
 
