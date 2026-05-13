@@ -81,16 +81,8 @@ export function OnboardingClient() {
   }
 
   const handleNextOrFinish = () => {
-    // Anything shown this step that wasn't liked counts as "not for me" — soft signal.
-    artworksForStep.forEach((art) => {
-      if (
-        !preferences.liked_artworks.includes(art.id) &&
-        !preferences.disliked_artworks.includes(art.id)
-      ) {
-        addDislikedArtwork(art.id)
-      }
-    })
-
+    // Just advance — unselected items stay neutral. Only explicit
+    // "None of these" should count as a dislike signal.
     if (step < TOTAL_STEPS) {
       setStep(step + 1)
     } else {
@@ -99,8 +91,12 @@ export function OnboardingClient() {
   }
 
   const handleNoneFit = () => {
+    // Explicit "I don't like any of these" — mark all shown as disliked.
     artworksForStep.forEach((art) => {
-      if (!preferences.disliked_artworks.includes(art.id)) {
+      if (
+        !preferences.disliked_artworks.includes(art.id) &&
+        !preferences.liked_artworks.includes(art.id)
+      ) {
         addDislikedArtwork(art.id)
       }
     })

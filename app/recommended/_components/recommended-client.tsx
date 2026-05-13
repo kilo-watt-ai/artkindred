@@ -65,7 +65,11 @@ export function RecommendedClient() {
         <ul className="grid_auto" role="list">
           {recommendedArtworks.map((artwork) => {
             const artist = SEED_ARTISTS.find((a) => a.id === artwork.artist_id)
-            const explanation = getRecommendationExplanation(artwork, preferences)
+            const explanation = getRecommendationExplanation(
+              artwork,
+              preferences,
+              SEED_ARTWORKS
+            )
             return (
               <li key={artwork.id}>
                 <Link
