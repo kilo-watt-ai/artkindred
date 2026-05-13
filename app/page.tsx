@@ -35,7 +35,7 @@ export default function Home() {
             </div>
             <div className="relative h-96 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl overflow-hidden">
               <img
-                src="https://images.unsplash.com/photo-1578821571636-144dbb7017e5?w=800&h=600&fit=crop"
+                src="https://images.unsplash.com/photo-1554189097-ffe88e998a2b?w=800&h=600&fit=crop"
                 alt="Art marketplace preview"
                 className="w-full h-full object-cover"
               />
