@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { Navigation } from '@/components/navigation'
 import { Footer } from '@/components/footer'
 import { OnboardingClient } from './_components/onboarding-client'
@@ -19,7 +20,15 @@ export default function OnboardingPage() {
         id="main-content"
         className="bg-gradient-to-b from-slate-50 to-white min-h-screen"
       >
-        <OnboardingClient />
+        <Suspense
+          fallback={
+            <div className="container py-20 text-center text-gray-500">
+              Loading…
+            </div>
+          }
+        >
+          <OnboardingClient />
+        </Suspense>
       </main>
       <Footer />
     </>

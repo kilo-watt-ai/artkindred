@@ -110,7 +110,7 @@ export function RecommendedClient() {
         <p className="text-gray-600 mb-5">
           Retake the visual flow to update your preferences anytime.
         </p>
-        <Link href="/onboarding" className="btn-outline">
+        <Link href="/onboarding?retake=1" className="btn-outline">
           Retake taste profile
         </Link>
       </div>

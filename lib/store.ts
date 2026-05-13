@@ -13,6 +13,10 @@ interface PreferenceStore {
   completeOnboarding: () => void
   toggleFavoriteArtwork: (id: string) => void
   toggleFavoriteArtist: (id: string) => void
+  /** Reset onboarding-derived signals (likes, dislikes, completion) but
+   *  keep favorites. Used when the buyer retakes their taste profile. */
+  restartOnboarding: () => void
+  /** Reset everything — onboarding state and favorites. */
   reset: () => void
 }
 
@@ -83,6 +87,11 @@ export const usePreferenceStore = create<PreferenceStore>()(
             ? state.favorite_artists.filter((a) => a !== id)
             : [...state.favorite_artists, id]
         })),
+      restartOnboarding: () =>
+        set({
+          preferences: defaultPreferences
+          // favorite_artworks and favorite_artists intentionally preserved
+        }),
       reset: () =>
         set({
           preferences: defaultPreferences,

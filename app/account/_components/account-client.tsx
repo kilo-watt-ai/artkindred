@@ -398,7 +398,10 @@ export function AccountClient() {
                     : "You haven't completed taste onboarding yet."}
                 </p>
               </div>
-              <Link href="/onboarding" className="btn-outline text-sm whitespace-nowrap">
+              <Link
+                href={preferences.onboarding_complete ? '/onboarding?retake=1' : '/onboarding'}
+                className="btn-outline text-sm whitespace-nowrap"
+              >
                 {preferences.onboarding_complete ? 'Retake' : 'Start'}
               </Link>
             </div>

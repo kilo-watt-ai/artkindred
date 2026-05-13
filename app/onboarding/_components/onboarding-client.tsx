@@ -1,6 +1,7 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Check, CheckCircle, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react'
@@ -23,25 +24,43 @@ function seededShuffle<T>(items: T[], seed: number): T[] {
 }
 
 export function OnboardingClient() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const {
     preferences,
     addLikedArtwork,
     removeLikedArtwork,
     addDislikedArtwork,
     completeOnboarding,
-    reset
+    restartOnboarding
   } = usePreferenceStore()
 
   const [step, setStep] = useState(1)
   // A simple per-session seed makes the shuffle stable within a session.
-  const [seed] = useState(() => Math.floor(Date.now() / 1000))
+  const [seed, setSeed] = useState(() => Math.floor(Date.now() / 1000))
+
+  // When the URL has ?retake=1, reset the onboarding state and start fresh.
+  // Favorites are intentionally preserved — only the taste-flow signals get cleared.
+  useEffect(() => {
+    if (searchParams?.get('retake') === '1') {
+      restartOnboarding()
+      setStep(1)
+      setSeed(Math.floor(Date.now() / 1000))
+      router.replace('/onboarding')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   const artworksForStep = useMemo(() => {
     const shuffled = seededShuffle(SEED_ARTWORKS, seed + step)
     return shuffled.slice(0, ARTWORKS_PER_STEP)
   }, [seed, step])
 
-  if (preferences.onboarding_complete) {
+  // While the retake reset is being applied, hide the completion screen
+  // so we don't flash it briefly before the state updates.
+  const isRetaking = searchParams?.get('retake') === '1'
+
+  if (preferences.onboarding_complete && !isRetaking) {
     return (
       <div className="container py-20 min-h-[60vh] flex items-center justify-center">
         <div className="text-center max-w-2xl">
@@ -62,7 +81,11 @@ export function OnboardingClient() {
             </Link>
           </div>
           <button
-            onClick={() => reset()}
+            onClick={() => {
+              restartOnboarding()
+              setStep(1)
+              setSeed(Math.floor(Date.now() / 1000))
+            }}
             className="mt-8 text-sm text-gray-500 hover:text-gray-900 underline"
           >
             Restart taste profile
