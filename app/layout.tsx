@@ -1,55 +1,43 @@
-import type { Metadata } from "next";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
-import "./globals.css";
-
-const headingFont = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  variable: "--font-heading"
-});
-
-const bodyFont = Manrope({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-body"
-});
+import type { Metadata } from 'next'
+import './globals.css'
 
 export const metadata: Metadata = {
-  title: "Repete Performance | Leadership Performance Coaching",
-  description:
-    "Repete Performance helps leaders fix the behavior patterns behind slower growth, poor decision-making, and stalled execution. Behavioral coaching led by Dr. Brian Peters, PhD in Industrial-Organizational Psychology.",
+  title: 'Artkindred - Discover Art That Speaks to You',
+  description: 'An approachable, discovery-focused marketplace for discovering and collecting art. Made for first-time collectors.',
   openGraph: {
-    title: "Repete Performance | Leadership Performance Coaching",
-    description:
-      "Fix the behavior patterns limiting your leadership. Behavioral coaching led by Dr. Brian Peters, PhD I-O Psychology.",
-    type: "website",
-    locale: "en_US",
-    siteName: "Repete Performance"
+    title: 'Artkindred - Discover Art That Speaks to You',
+    description: 'An approachable, discovery-focused marketplace for discovering and collecting art.',
+    type: 'website',
+    url: 'https://artkindred.com',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1578821571636-144dbb7017e5?w=1200&h=630&fit=crop',
+        width: 1200,
+        height: 630,
+        alt: 'Artkindred'
+      }
+    ]
   },
   twitter: {
-    card: "summary_large_image",
-    title: "Repete Performance | Leadership Performance Coaching",
-    description:
-      "Fix the behavior patterns limiting your leadership. Behavioral coaching led by Dr. Brian Peters."
-  },
-  robots: {
-    index: true,
-    follow: true
+    card: 'summary_large_image',
+    title: 'Artkindred - Discover Art That Speaks to You',
+    description: 'Discover and collect art from emerging artists in North Carolina'
   }
-};
+}
 
 export default function RootLayout({
   children
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
-      <body
-        className={`${headingFont.variable} ${bodyFont.variable} bg-[var(--color-bg)] font-[family:var(--font-body)] text-[var(--color-ink)] antialiased`}
-      >
-        {children}
-      </body>
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>" />
+      </head>
+      <body className="bg-white text-gray-900 antialiased">{children}</body>
     </html>
-  );
+  )
 }
