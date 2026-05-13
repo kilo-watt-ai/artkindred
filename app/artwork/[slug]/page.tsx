@@ -7,6 +7,7 @@ import { Navigation } from '@/components/navigation'
 import { Footer } from '@/components/footer'
 import { SEED_ARTWORKS, SEED_ARTISTS } from '@/lib/seed-data'
 import { ArtworkActions } from './_components/artwork-actions'
+import { PricingBreakdown } from './_components/pricing-breakdown'
 
 const SITE_URL = 'https://artkindred.vercel.app'
 
@@ -55,10 +56,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-function formatPrice(n: number): string {
-  return `$${n.toLocaleString('en-US')}`
-}
-
 export default async function ArtworkPage({ params }: Props) {
   const { slug } = await params
   const artwork = SEED_ARTWORKS.find((a) => a.slug === slug)
@@ -68,8 +65,6 @@ export default async function ArtworkPage({ params }: Props) {
   }
 
   const artist = SEED_ARTISTS.find((a) => a.id === artwork.artist_id)
-  const buyerFee = Math.round(artwork.price * 0.1)
-  const total = artwork.price + buyerFee + artwork.shipping_price
 
   // JSON-LD: Product schema for SEO + rich results
   const productJsonLd = {
@@ -241,24 +236,11 @@ export default async function ArtworkPage({ params }: Props) {
                 )}
               </dl>
 
-              <div className="border-t border-b py-5 space-y-2">
-                <div className="flex justify-between text-base">
-                  <span>Artwork price</span>
-                  <span className="font-semibold">{formatPrice(artwork.price)}</span>
-                </div>
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>Buyer fee (10%)</span>
-                  <span>{formatPrice(buyerFee)}</span>
-                </div>
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>Shipping</span>
-                  <span>{formatPrice(artwork.shipping_price)}</span>
-                </div>
-                <div className="flex justify-between text-lg font-bold pt-3 border-t mt-2">
-                  <span>Total</span>
-                  <span className="text-blue-600">{formatPrice(total)}</span>
-                </div>
-              </div>
+              <PricingBreakdown
+                artworkPrice={artwork.price}
+                shippingPrice={artwork.shipping_price}
+              />
+
 
               <ArtworkActions artwork={artwork} />
 
