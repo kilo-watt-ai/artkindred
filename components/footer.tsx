@@ -43,7 +43,7 @@ export function Footer() {
             <h2 className="text-white font-bold mb-4 text-sm uppercase tracking-wide">For Artists</h2>
             <ul className="space-y-2 text-sm" role="list">
               <li>
-                <Link href="/artist-login" className="hover:text-white transition-colors">
+                <Link href="/signin" className="hover:text-white transition-colors">
                   Sign In
                 </Link>
               </li>

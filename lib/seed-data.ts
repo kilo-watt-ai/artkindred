@@ -1,4 +1,4 @@
-import { Artist, Artwork } from './types'
+import { Artist, Artwork, Order, Message } from './types'
 
 export const SEED_ARTISTS: Artist[] = [
   {
@@ -298,6 +298,81 @@ export const SEED_ARTWORKS: Artwork[] = [
     updated_at: new Date().toISOString()
   }
 ]
+
+// Mock order and message data — used by the artist dashboard and buyer
+// account pages until real data is wired up via Supabase.
+export const MOCK_ORDERS: Order[] = [
+  {
+    id: 'order-1',
+    buyer_id: 'demo-buyer',
+    artwork_id: 'artwork-3',
+    artist_id: 'artist-2',
+    amount: 450,
+    buyer_fee: 45,
+    shipping_cost: 85,
+    status: 'shipped',
+    tracking_number: '1Z999AA10123456784',
+    created_at: '2026-04-12T10:00:00Z',
+    updated_at: '2026-04-18T14:30:00Z'
+  },
+  {
+    id: 'order-2',
+    buyer_id: 'demo-buyer',
+    artwork_id: 'artwork-7',
+    artist_id: 'artist-4',
+    amount: 250,
+    buyer_fee: 25,
+    shipping_cost: 35,
+    status: 'delivered',
+    tracking_number: '1Z999AA10123456785',
+    created_at: '2026-03-02T15:20:00Z',
+    updated_at: '2026-03-10T11:00:00Z'
+  },
+  {
+    id: 'order-3',
+    buyer_id: 'demo-buyer',
+    artwork_id: 'artwork-8',
+    artist_id: 'artist-4',
+    amount: 180,
+    buyer_fee: 18,
+    shipping_cost: 30,
+    status: 'accepted',
+    created_at: '2026-05-10T09:15:00Z',
+    updated_at: '2026-05-11T16:45:00Z'
+  }
+]
+
+export const MOCK_MESSAGES: Message[] = [
+  {
+    id: 'msg-1',
+    sender_id: 'demo-buyer',
+    recipient_id: 'artist-1',
+    artwork_id: 'artwork-1',
+    content: "Hi Sarah, I love Morning Light. Is the framing custom or can I have it shipped unframed?",
+    read: true,
+    created_at: '2026-05-08T14:22:00Z'
+  },
+  {
+    id: 'msg-2',
+    sender_id: 'artist-1',
+    recipient_id: 'demo-buyer',
+    artwork_id: 'artwork-1',
+    content: "Hi! The piece comes unframed — I find collectors prefer to choose framing that matches their space. Happy to recommend a framer in your area if helpful.",
+    read: true,
+    created_at: '2026-05-08T18:45:00Z'
+  },
+  {
+    id: 'msg-3',
+    sender_id: 'demo-buyer',
+    recipient_id: 'artist-4',
+    artwork_id: 'artwork-7',
+    content: "Hi James, will there be more pieces in the Botanical Study series?",
+    read: false,
+    created_at: '2026-05-12T20:10:00Z'
+  }
+]
+
+export const DEMO_BUYER_ID = 'demo-buyer'
 
 export const CATEGORIES = ['painting', 'print', 'photography', 'sculpture']
 export const COLORS = [

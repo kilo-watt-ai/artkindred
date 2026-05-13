@@ -2,10 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, ShoppingBag } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { Menu, X, ShoppingBag, User, Palette } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useSessionStore } from '@/lib/session'
 
-const NAV_LINKS = [
+const GUEST_LINKS = [
   { href: '/discover', label: 'Discover' },
   { href: '/onboarding', label: 'Your Taste' },
   { href: '/recommended', label: 'Recommended' },
@@ -13,16 +14,32 @@ const NAV_LINKS = [
   { href: '/artist-info', label: 'For Artists' }
 ]
 
+const BUYER_LINKS = [
+  { href: '/discover', label: 'Discover' },
+  { href: '/recommended', label: 'Recommended' },
+  { href: '/artists', label: 'Artists' }
+]
+
+const ARTIST_LINKS = [
+  { href: '/portfolio', label: 'My Portfolio' },
+  { href: '/discover', label: 'Discover' },
+  { href: '/artists', label: 'Artists' }
+]
+
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
   const pathname = usePathname()
+  const session = useSessionStore((s) => s.session)
 
-  // Close mobile menu on route change
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
+
   useEffect(() => {
     setIsOpen(false)
   }, [pathname])
 
-  // Lock body scroll when mobile menu is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
@@ -33,6 +50,15 @@ export function Navigation() {
       document.body.style.overflow = ''
     }
   }, [isOpen])
+
+  // Use guest links until hydrated to avoid hydration mismatch
+  const navLinks = !hydrated
+    ? GUEST_LINKS
+    : session.type === 'artist'
+      ? ARTIST_LINKS
+      : session.type === 'buyer'
+        ? BUYER_LINKS
+        : GUEST_LINKS
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
@@ -47,8 +73,9 @@ export function Navigation() {
         </Link>
 
         <ul className="hidden md:flex items-center space-x-6" role="list">
-          {NAV_LINKS.map((link) => {
-            const isActive = pathname === link.href || pathname?.startsWith(link.href + '/')
+          {navLinks.map((link) => {
+            const isActive =
+              pathname === link.href || pathname?.startsWith(link.href + '/')
             return (
               <li key={link.href}>
                 <Link
@@ -63,6 +90,29 @@ export function Navigation() {
               </li>
             )
           })}
+          {hydrated && session.type === 'buyer' && (
+            <li>
+              <Link
+                href="/account"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                aria-label={`Your account, ${session.name}`}
+              >
+                <User size={16} aria-hidden="true" />
+                <span>Account</span>
+              </Link>
+            </li>
+          )}
+          {hydrated && session.type === 'guest' && (
+            <li>
+              <Link
+                href="/signin"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+              >
+                <User size={16} aria-hidden="true" />
+                <span>Sign in</span>
+              </Link>
+            </li>
+          )}
           <li>
             <Link
               href="/cart"
@@ -92,8 +142,9 @@ export function Navigation() {
           className="md:hidden border-t border-gray-200 bg-white"
         >
           <ul className="container py-4 space-y-1" role="list">
-            {NAV_LINKS.map((link) => {
-              const isActive = pathname === link.href || pathname?.startsWith(link.href + '/')
+            {navLinks.map((link) => {
+              const isActive =
+                pathname === link.href || pathname?.startsWith(link.href + '/')
               return (
                 <li key={link.href}>
                   <Link
@@ -110,6 +161,39 @@ export function Navigation() {
                 </li>
               )
             })}
+            {hydrated && session.type === 'buyer' && (
+              <li>
+                <Link
+                  href="/account"
+                  className="flex items-center gap-2 px-3 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  <User size={18} aria-hidden="true" />
+                  Account ({session.name})
+                </Link>
+              </li>
+            )}
+            {hydrated && session.type === 'artist' && (
+              <li>
+                <Link
+                  href="/portfolio"
+                  className="flex items-center gap-2 px-3 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  <Palette size={18} aria-hidden="true" />
+                  My Portfolio
+                </Link>
+              </li>
+            )}
+            {hydrated && session.type === 'guest' && (
+              <li>
+                <Link
+                  href="/signin"
+                  className="flex items-center gap-2 px-3 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  <User size={18} aria-hidden="true" />
+                  Sign in
+                </Link>
+              </li>
+            )}
             <li>
               <Link
                 href="/cart"
