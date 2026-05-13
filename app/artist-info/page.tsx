@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 const benefits = [
   'Reach first-time collectors looking for authentic work',
-  'Keep 90% of your sale (10% fee charged to buyer, not deducted from your payout)',
+  'Keep 100% of your listed price — the platform fee is charged to the buyer, not deducted from your payout',
   'Polished profile and portfolio pages we host for you',
   'Direct on-platform messaging with buyers',
   'Order tracking with shipping status updates',

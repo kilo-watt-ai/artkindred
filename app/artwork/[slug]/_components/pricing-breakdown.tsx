@@ -15,9 +15,16 @@ function formatPrice(n: number): string {
   return `$${n.toLocaleString('en-US', { minimumFractionDigits: n % 1 === 0 ? 0 : 2, maximumFractionDigits: 2 })}`
 }
 
+// Platform fee rate — pricing dial. 13% absorbs Stripe processing
+// (~3% of total transaction) while keeping a healthy net margin and
+// the "artists keep 100% of their listed price" promise intact.
+// Adjust this single constant to change the fee everywhere.
+const PLATFORM_FEE_RATE = 0.13
+const PLATFORM_FEE_DISPLAY = `${Math.round(PLATFORM_FEE_RATE * 100)}%`
+
 export function PricingBreakdown({ artworkPrice, shippingPrice }: Props) {
-  const buyerFee = Math.round(artworkPrice * 0.1)
-  const taxableSubtotal = artworkPrice + buyerFee // most states exclude shipping; matching that here
+  const platformFee = Math.round(artworkPrice * PLATFORM_FEE_RATE)
+  const taxableSubtotal = artworkPrice + platformFee // most states exclude shipping; matching that here
 
   const [zip, setZip] = useState('')
   const [editingZip, setEditingZip] = useState(false)
@@ -102,7 +109,7 @@ export function PricingBreakdown({ artworkPrice, shippingPrice }: Props) {
   }
 
   const total =
-    artworkPrice + buyerFee + shippingPrice + (estimate?.taxAmount ?? 0)
+    artworkPrice + platformFee + shippingPrice + (estimate?.taxAmount ?? 0)
   const showingZipInput = editingZip || !estimate
 
   return (
@@ -113,34 +120,37 @@ export function PricingBreakdown({ artworkPrice, shippingPrice }: Props) {
       </div>
       <div ref={feeInfoRef} className="flex justify-between text-sm text-gray-600 relative">
         <span className="flex items-center gap-1">
-          Buyer fee (10%)
+          Platform fee ({PLATFORM_FEE_DISPLAY})
           <button
             type="button"
             onClick={() => setShowFeeInfo((v) => !v)}
             className="p-0.5 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-            aria-label="What is the buyer fee?"
+            aria-label="What is the platform fee?"
             aria-expanded={showFeeInfo}
             aria-controls="fee-explainer"
           >
             <HelpCircle size={14} aria-hidden="true" />
           </button>
         </span>
-        <span>{formatPrice(buyerFee)}</span>
+        <span>{formatPrice(platformFee)}</span>
         {showFeeInfo && (
           <div
             id="fee-explainer"
             role="dialog"
-            aria-label="About the buyer fee"
+            aria-label="About the platform fee"
             className="absolute left-0 right-0 sm:right-auto sm:w-80 top-full mt-2 p-4 bg-white border border-gray-200 rounded-lg shadow-lg z-20 text-sm text-gray-700"
           >
-            <p className="font-semibold text-gray-900 mb-2">Why a buyer fee?</p>
+            <p className="font-semibold text-gray-900 mb-2">Why a platform fee?</p>
             <p className="leading-relaxed">
-              This 10% covers the platform — secure payments, fraud protection,
-              and the discovery tools that help collectors find work they love.
+              This {PLATFORM_FEE_DISPLAY}
+              {' '}covers everything that makes Artkindred work — secure
+              payment processing, fraud protection, on-platform messaging,
+              and the discovery tools that connect collectors with artists
+              you&apos;d never find on your own.
             </p>
             <p className="leading-relaxed mt-2">
-              We add it on top of the artwork price (rather than deducting it
-              from the artist&apos;s sale) so artists keep 100% of what they list.
+              We add it on top of the artwork price so artists keep 100% of what they
+              list.
             </p>
           </div>
         )}
