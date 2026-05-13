@@ -65,7 +65,7 @@ export const SEED_ARTISTS: Artist[] = [
     name: 'James Thompson',
     bio: 'Print artist specializing in linocut and woodblock printing with botanical themes.',
     artist_statement: 'I am drawn to the precision and imperfection of hand-printed work. Nature is my constant inspiration.',
-    profile_photo_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
+    profile_photo_url: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=400&fit=crop',
     location: 'Greensboro, NC',
     mediums: ['Linocut', 'Woodblock Print', 'Etching'],
     price_range_min: 75,

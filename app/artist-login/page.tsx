@@ -1,42 +1,87 @@
-'use client'
-
-import Link from 'next/link'
+import type { Metadata } from 'next'
+import { Lock } from 'lucide-react'
 import { Navigation } from '@/components/navigation'
 import { Footer } from '@/components/footer'
-import { Lock } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Artist Sign In',
+  description:
+    'Sign in to your Artkindred artist account to manage your portfolio, listings, and orders.',
+  alternates: { canonical: '/artist-login' },
+  robots: { index: false, follow: true }
+}
 
 export default function ArtistLoginPage() {
   return (
     <>
       <Navigation />
-      <main className="container py-20 min-h-screen flex items-center justify-center">
+      <main
+        id="main-content"
+        className="container py-12 md:py-20 min-h-[60vh] flex items-center justify-center"
+      >
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <Lock className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h1 className="text-3xl font-bold mb-2">Artist Login</h1>
+            <Lock
+              className="w-12 h-12 text-blue-600 mx-auto mb-4"
+              aria-hidden="true"
+            />
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">Artist sign in</h1>
             <p className="text-gray-600">Access your portfolio and manage your listings</p>
           </div>
 
-          <div className="card p-8 space-y-6">
+          <form className="card p-6 md:p-8 space-y-5" autoComplete="on">
             <div>
-              <label className="block text-sm font-medium mb-2">Email</label>
-              <input type="email" placeholder="you@example.com" className="input" />
+              <label htmlFor="email" className="block text-sm font-medium mb-1.5">
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                placeholder="you@example.com"
+                className="input"
+                required
+              />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Password</label>
-              <input type="password" placeholder="••••••••" className="input" />
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="password" className="block text-sm font-medium">
+                  Password
+                </label>
+                <a
+                  href="mailto:support@artkindred.com?subject=Password reset"
+                  className="text-xs text-blue-600 hover:underline"
+                >
+                  Forgot?
+                </a>
+              </div>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                placeholder="••••••••"
+                className="input"
+                required
+              />
             </div>
 
-            <button className="w-full btn-primary py-2">Sign In</button>
+            <button type="submit" className="w-full btn-primary py-2.5">
+              Sign in
+            </button>
 
-            <div className="text-center text-sm text-gray-600">
-              <p>Don't have an account?</p>
-              <a href="mailto:artists@artkindred.com" className="text-blue-600 hover:underline font-medium">
+            <p className="text-center text-sm text-gray-600 pt-2 border-t">
+              Don&apos;t have an account?{' '}
+              <a
+                href="mailto:artists@artkindred.com?subject=Invite request"
+                className="text-blue-600 hover:underline font-medium"
+              >
                 Request an invite
               </a>
-            </div>
-          </div>
+            </p>
+          </form>
         </div>
       </main>
       <Footer />

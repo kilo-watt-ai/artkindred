@@ -1,23 +1,32 @@
-'use client'
-
+import type { Metadata } from 'next'
 import Link from 'next/link'
+import { ShoppingCart } from 'lucide-react'
 import { Navigation } from '@/components/navigation'
 import { Footer } from '@/components/footer'
-import { ShoppingCart } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Your Cart',
+  description: 'View artworks you have added to your cart.',
+  alternates: { canonical: '/cart' },
+  robots: { index: false, follow: false }
+}
 
 export default function CartPage() {
   return (
     <>
       <Navigation />
-      <main className="container py-20 min-h-screen">
-        <div className="text-center">
-          <ShoppingCart className="w-20 h-20 text-gray-400 mx-auto mb-6" />
-          <h1 className="text-4xl font-bold mb-4">Your Cart Is Empty</h1>
-          <p className="text-xl text-gray-600 mb-8">
-            Explore artworks and add them to your cart to get started
+      <main id="main-content" className="container py-20 min-h-[60vh] flex items-center justify-center">
+        <div className="text-center max-w-xl">
+          <ShoppingCart
+            className="w-16 h-16 text-gray-400 mx-auto mb-6"
+            aria-hidden="true"
+          />
+          <h1 className="text-3xl md:text-4xl font-bold mb-3">Your cart is empty</h1>
+          <p className="text-lg text-gray-600 mb-8">
+            Browse artworks and add favorites here to check out.
           </p>
-          <Link href="/discover" className="btn-primary text-lg">
-            Continue Exploring
+          <Link href="/discover" className="btn-primary text-base px-6 py-3">
+            Continue exploring
           </Link>
         </div>
       </main>
