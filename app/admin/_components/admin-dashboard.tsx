@@ -1,15 +1,23 @@
 'use client'
 
-import { useState } from 'react'
-import { Copy, Plus, Search, Check } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { Copy, Plus, Search, Check, LogOut, Lock } from 'lucide-react'
+import { useSessionStore } from '@/lib/session'
 import { SEED_ARTISTS, SEED_ARTWORKS } from '@/lib/seed-data'
 
 type Tab = 'overview' | 'artists' | 'invites' | 'orders'
 
 export function AdminDashboard() {
+  const router = useRouter()
+  const session = useSessionStore((s) => s.session)
+  const signOut = useSessionStore((s) => s.signOut)
+
   const [activeTab, setActiveTab] = useState<Tab>('overview')
   const [searchTerm, setSearchTerm] = useState('')
   const [copiedCode, setCopiedCode] = useState<string | null>(null)
+  const [hydrated, setHydrated] = useState(false)
   const [inviteCodes, setInviteCodes] = useState<
     { code: string; used: boolean; created: string }[]
   >([
@@ -17,6 +25,42 @@ export function AdminDashboard() {
     { code: 'ARTIST-EARLY-002', used: false, created: '2026-04-15' },
     { code: 'ARTIST-EARLY-003', used: false, created: '2026-05-01' }
   ])
+
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
+
+  // Gate the admin dashboard to admin sessions only.
+  // Show a sign-in CTA rather than auto-redirecting so it's obvious that
+  // admin access is intentionally gated.
+  if (hydrated && session.type !== 'admin') {
+    return (
+      <div className="container py-20 min-h-[60vh] flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <Lock
+            className="w-16 h-16 text-gray-400 mx-auto mb-4"
+            aria-hidden="true"
+          />
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">Admin only</h1>
+          <p className="text-gray-600 mb-6">
+            The admin dashboard is restricted to marketplace operators.
+            Sign in as admin to continue.
+          </p>
+          <Link href="/signin" className="btn-primary">
+            Go to sign in
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  if (!hydrated) {
+    return (
+      <div className="container py-20 text-center text-gray-500">
+        Loading…
+      </div>
+    )
+  }
 
   const generateInviteCode = () => {
     const segment = () =>
@@ -49,9 +93,22 @@ export function AdminDashboard() {
 
   return (
     <div className="container py-10 md:py-12">
-      <header className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Admin dashboard</h1>
-        <p className="text-gray-600">Manage artists, invite codes, and orders</p>
+      <header className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold mb-1">Admin dashboard</h1>
+          <p className="text-gray-600">Manage artists, invite codes, and orders</p>
+        </div>
+        <button
+          onClick={() => {
+            signOut()
+            router.push('/')
+          }}
+          className="btn-outline inline-flex items-center gap-2 text-sm self-start"
+          aria-label="Sign out of admin"
+        >
+          <LogOut size={16} aria-hidden="true" />
+          Sign out
+        </button>
       </header>
 
       <div role="tablist" aria-label="Admin sections" className="flex gap-1 mb-8 border-b overflow-x-auto">

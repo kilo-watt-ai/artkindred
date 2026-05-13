@@ -6,12 +6,14 @@ export type Session =
   | { type: 'guest' }
   | { type: 'artist'; userId: string }
   | { type: 'buyer'; userId: string; name: string; email: string }
+  | { type: 'admin'; userId: string; name: string }
 
 interface SessionStore {
   session: Session
   buyer_addresses: Address[]
   signInAsArtist: (artistId: string) => void
   signInAsBuyer: (name: string, email: string) => void
+  signInAsAdmin: () => void
   signOut: () => void
   // Buyer profile management
   updateBuyer: (updates: Partial<{ name: string; email: string }>) => void
@@ -46,6 +48,11 @@ export const useSessionStore = create<SessionStore>()(
             email
           }
         })),
+
+      signInAsAdmin: () =>
+        set({
+          session: { type: 'admin', userId: 'admin-demo', name: 'Demo Admin' }
+        }),
 
       signOut: () => set({ session: guestSession }),
 

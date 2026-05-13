@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, ShoppingBag, User, Palette } from 'lucide-react'
+import { Menu, X, ShoppingBag, User, Palette, Shield } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useSessionStore } from '@/lib/session'
 
@@ -22,6 +22,12 @@ const BUYER_LINKS = [
 
 const ARTIST_LINKS = [
   { href: '/portfolio', label: 'My Portfolio' },
+  { href: '/discover', label: 'Discover' },
+  { href: '/artists', label: 'Artists' }
+]
+
+const ADMIN_LINKS = [
+  { href: '/admin', label: 'Admin' },
   { href: '/discover', label: 'Discover' },
   { href: '/artists', label: 'Artists' }
 ]
@@ -54,11 +60,13 @@ export function Navigation() {
   // Use guest links until hydrated to avoid hydration mismatch
   const navLinks = !hydrated
     ? GUEST_LINKS
-    : session.type === 'artist'
-      ? ARTIST_LINKS
-      : session.type === 'buyer'
-        ? BUYER_LINKS
-        : GUEST_LINKS
+    : session.type === 'admin'
+      ? ADMIN_LINKS
+      : session.type === 'artist'
+        ? ARTIST_LINKS
+        : session.type === 'buyer'
+          ? BUYER_LINKS
+          : GUEST_LINKS
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
@@ -180,6 +188,17 @@ export function Navigation() {
                 >
                   <Palette size={18} aria-hidden="true" />
                   My Portfolio
+                </Link>
+              </li>
+            )}
+            {hydrated && session.type === 'admin' && (
+              <li>
+                <Link
+                  href="/admin"
+                  className="flex items-center gap-2 px-3 py-3 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  <Shield size={18} aria-hidden="true" />
+                  Admin dashboard
                 </Link>
               </li>
             )}

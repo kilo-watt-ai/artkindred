@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ShoppingBag, Palette, ChevronRight } from 'lucide-react'
+import { ShoppingBag, Palette, ChevronRight, Shield } from 'lucide-react'
 import { useSessionStore } from '@/lib/session'
 import { SEED_ARTISTS } from '@/lib/seed-data'
 
@@ -15,6 +15,7 @@ export function SignInClient() {
   const session = useSessionStore((s) => s.session)
   const signInAsBuyer = useSessionStore((s) => s.signInAsBuyer)
   const signInAsArtist = useSessionStore((s) => s.signInAsArtist)
+  const signInAsAdmin = useSessionStore((s) => s.signInAsAdmin)
 
   const [mode, setMode] = useState<Mode>('choose')
   const [buyerName, setBuyerName] = useState('')
@@ -41,10 +42,25 @@ export function SignInClient() {
     router.push('/portfolio')
   }
 
+  const handleAdminSignIn = () => {
+    signInAsAdmin()
+    router.push('/admin')
+  }
+
   // If already signed in, show a redirect option
   if (session.type !== 'guest') {
-    const target = session.type === 'artist' ? '/portfolio' : '/account'
-    const label = session.type === 'artist' ? 'your portfolio' : 'your account'
+    const target =
+      session.type === 'artist'
+        ? '/portfolio'
+        : session.type === 'admin'
+          ? '/admin'
+          : '/account'
+    const label =
+      session.type === 'artist'
+        ? 'your portfolio'
+        : session.type === 'admin'
+          ? 'the admin dashboard'
+          : 'your account'
     return (
       <div className="container py-20 min-h-[60vh] flex items-center justify-center">
         <div className="text-center max-w-md">
@@ -124,6 +140,17 @@ export function SignInClient() {
               Note: This is a demo. Real authentication is coming once Supabase
               is wired up.
             </p>
+
+            <div className="mt-10 pt-6 border-t border-dashed border-gray-200 text-center">
+              <p className="text-xs text-gray-500 mb-2">Marketplace operator</p>
+              <button
+                onClick={handleAdminSignIn}
+                className="inline-flex items-center gap-1.5 text-sm text-gray-700 hover:text-blue-600 transition-colors underline"
+              >
+                <Shield size={14} aria-hidden="true" />
+                Sign in to admin dashboard (demo)
+              </button>
+            </div>
           </>
         )}
 
