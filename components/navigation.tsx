@@ -39,10 +39,10 @@ export function Navigation() {
       <nav className="container flex items-center justify-between h-16" aria-label="Primary">
         <Link
           href="/"
-          className="flex items-center space-x-2 font-bold text-2xl"
+          className="flex items-center gap-2 font-bold text-2xl"
           aria-label="Artkindred home"
         >
-          <span className="text-blue-600" aria-hidden="true">🎨</span>
+          <span aria-hidden="true" className="text-2xl leading-none">🎨</span>
           <span>Artkindred</span>
         </Link>
 

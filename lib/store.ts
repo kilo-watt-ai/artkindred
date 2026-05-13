@@ -193,7 +193,13 @@ export function getRecommendedArtworks(
   preferences: BuyerPreferences,
   limit = 6
 ): Artwork[] {
-  const scored = artworks
+  // Recommendations should surface new discoveries, not work the user
+  // has already liked or rejected.
+  const candidates = artworks.filter(
+    (a) => !preferences.liked_artworks.includes(a.id)
+  )
+
+  const scored = candidates
     .map((artwork) => ({
       artwork,
       score: scoreArtwork(artwork, preferences, artworks)
@@ -202,9 +208,9 @@ export function getRecommendedArtworks(
     .sort((a, b) => b.score - a.score)
 
   // Hard fallback: if the user has disliked everything (e.g. in a small
-  // demo dataset), show all artworks so the page is never empty.
+  // demo dataset), show all non-liked artworks so the page is never empty.
   if (scored.length === 0) {
-    return artworks.slice(0, limit)
+    return candidates.slice(0, limit)
   }
 
   return scored.slice(0, limit).map((item) => item.artwork)
@@ -215,23 +221,24 @@ export function getRecommendationExplanation(
   preferences: BuyerPreferences,
   allArtworks?: Artwork[]
 ): string {
-  const reasons: string[] = []
+  // Inferred from likes — these phrases work in a "Because you liked ..." sentence
+  const likeReasons: string[] = []
+  // Explicit preferences (from filter selections) — work in a "Matches your ..." sentence
+  const matchReasons: string[] = []
 
-  // Explicit filter preferences (if user set them via discover filters)
   if (preferences.preferred_categories.includes(artwork.category)) {
-    reasons.push(`${artwork.category} works`)
+    matchReasons.push(`${artwork.category} preference`)
   }
   if (preferences.preferred_mediums.includes(artwork.medium)) {
-    reasons.push(artwork.medium)
+    matchReasons.push(`favorite medium`)
   }
   const explicitColorMatches = artwork.color_tags.filter((c) =>
     preferences.preferred_colors.includes(c)
   )
   if (explicitColorMatches.length > 0) {
-    reasons.push(`${explicitColorMatches[0]} tones`)
+    matchReasons.push(`${explicitColorMatches[0]} tones`)
   }
 
-  // Inferred from likes
   if (allArtworks && preferences.liked_artworks.length > 0) {
     const liked = allArtworks.filter((a) =>
       preferences.liked_artworks.includes(a.id)
@@ -242,21 +249,27 @@ export function getRecommendationExplanation(
     const likedArtists = new Set(liked.map((a) => a.artist_id))
 
     if (likedArtists.has(artwork.artist_id)) {
-      reasons.push('an artist you like')
-    } else if (likedCategories.has(artwork.category) && !preferences.preferred_categories.includes(artwork.category)) {
-      reasons.push(`other ${artwork.category}s you enjoyed`)
-    } else if (likedMediums.has(artwork.medium) && !preferences.preferred_mediums.includes(artwork.medium)) {
-      reasons.push(`similar medium`)
-    } else if (artwork.color_tags.some((c) => likedColors.has(c))) {
-      reasons.push('similar color palette')
+      return `By an artist you've liked before`
+    }
+    if (likedMediums.has(artwork.medium)) {
+      likeReasons.push(`${artwork.medium.toLowerCase()}`)
+    } else if (likedCategories.has(artwork.category)) {
+      likeReasons.push(`other ${artwork.category}s`)
+    }
+    const sharedColors = artwork.color_tags.filter((c) => likedColors.has(c))
+    if (sharedColors.length > 0) {
+      likeReasons.push(`${sharedColors[0]} palettes`)
     }
   }
 
-  if (reasons.length === 0) {
-    return 'Picked for you'
+  if (likeReasons.length > 0) {
+    const unique = Array.from(new Set(likeReasons)).slice(0, 2)
+    return `Similar to work you liked — ${unique.join(', ')}`
+  }
+  if (matchReasons.length > 0) {
+    const unique = Array.from(new Set(matchReasons)).slice(0, 2)
+    return `Matches your ${unique.join(' and ')}`
   }
 
-  // Deduplicate while preserving order, take up to 2 reasons
-  const unique = Array.from(new Set(reasons)).slice(0, 2)
-  return `Because you liked ${unique.join(' and ')}`
+  return 'Picked for you'
 }

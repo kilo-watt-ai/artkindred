@@ -300,19 +300,6 @@ export const SEED_ARTWORKS: Artwork[] = [
 ]
 
 export const CATEGORIES = ['painting', 'print', 'photography', 'sculpture']
-export const MEDIUMS = [
-  'Acrylic',
-  'Oil Paint',
-  'Mixed Media',
-  'Photography',
-  'Digital Print',
-  'Archival Pigment Print',
-  'Clay',
-  'Bronze',
-  'Ceramic',
-  'Linocut',
-  'Woodblock Print'
-]
 export const COLORS = [
   'warm orange',
   'soft yellow',

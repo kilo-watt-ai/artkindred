@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "artkindred-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "/Users/brianpeters/Desktop/AI Projects/Business Websites/artkindred",
+      "port": 3000
+    }
+  ]
+}

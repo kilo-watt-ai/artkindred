@@ -29,7 +29,7 @@ export default function ArtistsPage() {
           </header>
 
           <ul className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" role="list">
-            {published.map((artist) => {
+            {published.map((artist, idx) => {
               const workCount = SEED_ARTWORKS.filter((a) => a.artist_id === artist.id).length
               return (
                 <li key={artist.id}>
@@ -42,6 +42,7 @@ export default function ArtistsPage() {
                         src={artist.profile_photo_url}
                         alt={`Portrait of ${artist.name}`}
                         fill
+                        priority={idx < 3}
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover"
                       />

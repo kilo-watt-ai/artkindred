@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Search, X, SlidersHorizontal, ChevronDown, ChevronUp } from 'lucide-react'
-import { SEED_ARTWORKS, SEED_ARTISTS, CATEGORIES, MEDIUMS, COLORS } from '@/lib/seed-data'
+import { SEED_ARTWORKS, SEED_ARTISTS, CATEGORIES, COLORS } from '@/lib/seed-data'
 
 type SortOption = 'newest' | 'price-low' | 'price-high'
 
@@ -74,7 +74,9 @@ export function DiscoverClient() {
     return counts
   }, [])
 
-  const availableMediums = MEDIUMS.filter((m) => mediumCounts[m] > 0)
+  // Derive mediums from actual artwork data so filter stays accurate
+  // even when artist medium strings don't match a static list.
+  const availableMediums = Object.keys(mediumCounts).sort()
   const availableColors = COLORS.filter((c) => colorCounts[c] > 0)
 
   const filteredArtworks = useMemo(() => {
