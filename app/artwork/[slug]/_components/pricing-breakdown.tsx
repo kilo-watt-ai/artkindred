@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { MapPin, Loader2 } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { MapPin, Loader2, HelpCircle } from 'lucide-react'
 import { estimateSalesTax, isValidZip, type TaxEstimate } from '@/lib/tax'
 
 interface Props {
@@ -24,6 +24,27 @@ export function PricingBreakdown({ artworkPrice, shippingPrice }: Props) {
   const [estimate, setEstimate] = useState<TaxEstimate | null>(null)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [showFeeInfo, setShowFeeInfo] = useState(false)
+  const feeInfoRef = useRef<HTMLDivElement>(null)
+
+  // Close the fee popover on outside click or Escape
+  useEffect(() => {
+    if (!showFeeInfo) return
+    function handleClickOutside(e: MouseEvent) {
+      if (feeInfoRef.current && !feeInfoRef.current.contains(e.target as Node)) {
+        setShowFeeInfo(false)
+      }
+    }
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === 'Escape') setShowFeeInfo(false)
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [showFeeInfo])
 
   // Load persisted ZIP on mount and run an estimate
   useEffect(() => {
@@ -90,9 +111,39 @@ export function PricingBreakdown({ artworkPrice, shippingPrice }: Props) {
         <span>Artwork price</span>
         <span className="font-semibold">{formatPrice(artworkPrice)}</span>
       </div>
-      <div className="flex justify-between text-sm text-gray-600">
-        <span>Buyer fee (10%)</span>
+      <div ref={feeInfoRef} className="flex justify-between text-sm text-gray-600 relative">
+        <span className="flex items-center gap-1">
+          Buyer fee (10%)
+          <button
+            type="button"
+            onClick={() => setShowFeeInfo((v) => !v)}
+            className="p-0.5 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            aria-label="What is the buyer fee?"
+            aria-expanded={showFeeInfo}
+            aria-controls="fee-explainer"
+          >
+            <HelpCircle size={14} aria-hidden="true" />
+          </button>
+        </span>
         <span>{formatPrice(buyerFee)}</span>
+        {showFeeInfo && (
+          <div
+            id="fee-explainer"
+            role="dialog"
+            aria-label="About the buyer fee"
+            className="absolute left-0 right-0 sm:right-auto sm:w-80 top-full mt-2 p-4 bg-white border border-gray-200 rounded-lg shadow-lg z-20 text-sm text-gray-700"
+          >
+            <p className="font-semibold text-gray-900 mb-2">Why a buyer fee?</p>
+            <p className="leading-relaxed">
+              This 10% covers the platform — secure payments, fraud protection,
+              and the discovery tools that help collectors find work they love.
+            </p>
+            <p className="leading-relaxed mt-2">
+              We add it on top of the artwork price (rather than deducting it
+              from the artist&apos;s sale) so artists keep 100% of what they list.
+            </p>
+          </div>
+        )}
       </div>
       <div className="flex justify-between text-sm text-gray-600">
         <span>Shipping</span>
